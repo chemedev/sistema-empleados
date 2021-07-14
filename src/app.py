@@ -11,7 +11,7 @@ app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
 app.config['MYSQL_DATABASE_DB'] = 'empleados'
 
-UPLOADS = os.path.join('uploads')
+UPLOADS = os.path.join('src/uploads')
 app.config['UPLOADS'] = UPLOADS  # Guardamos la ruta como un valor en la app
 
 mysql.init_app(app)
@@ -44,13 +44,11 @@ def store():
     _foto = request.files['txtFoto']
 
     now = datetime.now()
-    print(now)
     tiempo = now.strftime("%Y%H%M%S")
-    print(tiempo)
 
     if _foto.filename != '':
         nuevoNombreFoto = tiempo + '_' + _foto.filename
-        _foto.save("uploads/" + nuevoNombreFoto)
+        _foto.save("src/uploads/" + nuevoNombreFoto)
 
     sql = "INSERT INTO empleados (nombre, correo, foto) values (%s, %s, %s);"
     datos = (_nombre, _correo, nuevoNombreFoto)
@@ -65,11 +63,14 @@ def store():
 
 @app.route('/delete/<int:id>')
 def delete(id):
-    sql = f'DELETE FROM empleados WHERE id={id}'
-    conn = mysql.connect()
-    cursor = conn.cursor()
-    cursor.execute(sql)
-    conn.commit()
+
+    try:
+        os.remove(os.path.join(app.config['UPLOADS'], nombreFoto[0]))
+    except:
+        pass
+
+    sql = "DELETE FROM empleados WHERE id = (%s)"
+    queryMySql(sql, datos)
 
     return redirect('/')
 
@@ -89,7 +90,7 @@ def modify(id):
 def update():
     _nombre = request.form['txtNombre']
     _correo = request.form['txtCorreo']
-    _foto = request.form['txtFoto']
+    _foto = request.files['txtFoto']
     id = request.form['txtId']
 
     datos = (_nombre, _correo, id)
@@ -101,21 +102,27 @@ def update():
         now = datetime.now()
         tiempo = now.strftime("%Y%H%M%S")
         nuevoNombreFoto = tiempo + '_' + _foto.filename
-        _foto.save("uploads/" + nuevoNombreFoto)
+        _foto.save("src/uploads/" + nuevoNombreFoto)
 
     sql = f'SELECT foto FROM empleados WHERE id={id}'
     cursor.execute(sql)
 
     nombreFoto = cursor.fetchone()[0]
 
-    os.remove(os.path.join(app.config['UPLOADS'], nombreFoto))
+        try:
+            os.remove(os.path.join(app.config['UPLOADS'], nombreFoto))
+        except:
+            pass
 
-    conn = mysql.connect()
-    cursor = conn.cursor()
+        sql = f'UPDATE empleados SET foto="{nuevoNombreFoto}" WHERE id="{id}";'
+        cursor.execute(sql)
+        conn.commit()
 
-    sql = f'UPDATE empleados SET nombre={_nombre}, correo={_correo} WHERE id={id}'
+    sql = f'UPDATE empleados SET nombre="{_nombre}", correo="{_correo}" WHERE id="{id}"'
     cursor.execute(sql)
     conn.commit()
+
+    return redirect('/')
 
 
 if __name__ == '__main__':
