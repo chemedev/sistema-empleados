@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from flaskext.mysql import MySQL
 from datetime import datetime
 import os
@@ -28,6 +28,12 @@ def index():
     empleados = cursor.fetchall()
 
     conn.commit()
+
+
+@app.route('/fotodeusuario/<path:nombreFoto>')
+def uploads(nombreFoto):
+    return send_from_directory(os.path.join('uploads'), nombreFoto)
+
 
     return render_template('empleados/index.html', empleados=empleados)
 
