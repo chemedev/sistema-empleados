@@ -20,7 +20,7 @@ conn = mysql.connect()
 cursor = conn.cursor(cursor=DictCursor)
 
 
-def queryMySql(query, data = None, tipoDeRetorno='none'):
+def queryMySql(query, data=None, tipoDeRetorno='none'):
     if data != None:
         cursor.execute(query, data)
     else:
@@ -28,14 +28,13 @@ def queryMySql(query, data = None, tipoDeRetorno='none'):
 
     if tipoDeRetorno == "one":
         registro = cursor.fetchone()
-        conn.commit()
-        return registro
-    elif tipoDeRetorno == "all":
-        registro = cursor.fetchall()
-        conn.commit()
-        return registro
     else:
+        registro = cursor.fetchall()
+
+    if query.casefold().find("select") != -1:
         conn.commit()
+
+    return registro
 
 
 @app.route('/fotodeusuario/<path:nombreFoto>')
