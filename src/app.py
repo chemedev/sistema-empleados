@@ -50,30 +50,28 @@ def index():
     return render_template('empleados/index.html', empleados=empleados)
 
 
-@app.route('/create')
-def create():
-    return render_template('empleados/create.html')
+@app.route('/empleado/crear', methods=["GET", "POST"])
+def alta_empleado():
+    if request.method == "GET":
+        return render_template('empleados/create.html')
+    elif request.method == "POST":
+        _nombre = request.form['txtNombre']
+        _correo = request.form['txtCorreo']
+        _foto = request.files['txtFoto']
 
+        now = datetime.now()
+        tiempo = now.strftime("%Y%H%M%S")
 
-@app.route('/store', methods=["POST"])
-def store():
-    _nombre = request.form['txtNombre']
-    _correo = request.form['txtCorreo']
-    _foto = request.files['txtFoto']
+        if _foto.filename != '':
+            nuevoNombreFoto = tiempo + '_' + _foto.filename
+            _foto.save("src/uploads/" + nuevoNombreFoto)
 
-    now = datetime.now()
-    tiempo = now.strftime("%Y%H%M%S")
+        sql = "INSERT INTO empleados (nombre, correo, foto) values (%s, %s, %s);"
+        datos = (_nombre, _correo, nuevoNombreFoto)
 
-    if _foto.filename != '':
-        nuevoNombreFoto = tiempo + '_' + _foto.filename
-        _foto.save("src/uploads/" + nuevoNombreFoto)
+        queryMySql(sql, datos)
 
-    sql = "INSERT INTO empleados (nombre, correo, foto) values (%s, %s, %s);"
-    datos = (_nombre, _correo, nuevoNombreFoto)
-
-    queryMySql(sql, datos)
-
-    return redirect('/')
+        return redirect('/')
 
 
 @app.route('/delete/<int:id>')
