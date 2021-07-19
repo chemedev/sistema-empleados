@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+from pymysql.cursors import DictCursor
 from flaskext.mysql import MySQL
 from datetime import datetime
 import os
@@ -17,7 +17,7 @@ app.config['UPLOADS'] = UPLOADS  # Guardamos la ruta como un valor en la app
 mysql.init_app(app)
 
 conn = mysql.connect()
-cursor = conn.cursor()
+cursor = conn.cursor(cursor=DictCursor)
 
 
 def queryMySql(query, data = None, tipoDeRetorno='none'):

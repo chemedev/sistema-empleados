@@ -6,18 +6,18 @@
     </div>
     <div class="card-body">
       <p class="card-text">
-        <input class="d-none" type="text" value="{{empleado[0]}}" name="txtId" id="txtId" />
+        <input class="d-none" type="text" value="{{empleado.id}}" name="txtId" id="txtId" />
         <div class="form-group">
           <label for="txtNombre">Nombre</label>
-          <input type="text" name="txtNombre" id="txtNombre" value="{{empleado[1]}}" />
+          <input type="text" name="txtNombre" id="txtNombre" value="{{empleado.nombre}}" />
         </div>
         <div class="form-group">
           <label for="txtCorreo">Correo:</label>
-          <input type="email" name="txtCorreo" id="txtCorreo" value="{{empleado[2]}}" />
+          <input type="email" name="txtCorreo" id="txtCorreo" value="{{empleado.correo}}" />
         </div>
         <div class="form-group">
           <label for="txtFoto">Foto de perfil:</label>
-          <img class="img-thumbnail" width="100" alt="foto de perfil" src="{{ url_for('uploads', nombreFoto=empleado[3]) }}">
+          <img class="img-thumbnail" width="100" alt="foto de perfil" src="{{ url_for('uploads', nombreFoto=empleado.foto) }}">
           <input type="file" name="txtFoto" id="txtFoto" />
         </div>
         <div class="form-group">
